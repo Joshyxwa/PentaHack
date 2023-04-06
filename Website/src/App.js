@@ -11,6 +11,12 @@ import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import ComputerIcon from '@material-ui/icons/Computer';
 import HttpIcon from '@material-ui/icons/Http';
+//Recorder
+import { useState, useRef } from "react";
+import VideoRecorder from "../src/VideoRecorder";
+import AudioRecorder from "../src/AudioRecorder";
+
+
 
 const theme = createMuiTheme({
   palette: {
@@ -59,8 +65,14 @@ const styles = makeStyles({
 
 function App() {
   const classes = styles(); 
-
+  let [recordOption, setRecordOption] = useState("video");
+  const toggleRecordOption = (type) => {
+      return () => {
+          setRecordOption(type);
+      };
+  };
   return (
+
     <div className="App">
       <ThemeProvider theme={theme}>
         <NavBar/>
@@ -75,6 +87,20 @@ function App() {
           winds outside.
           </Typography>
         </div>
+        <div>
+            <h1>React Media Recorder</h1>
+            <div className="button-flex">
+                <button onClick={toggleRecordOption("video")}>
+                  Record Video
+                </button>
+                <button onClick={toggleRecordOption("audio")}>
+                  Record Audio
+                </button>
+            </div>
+            <div>
+                {recordOption === "video" ? <VideoRecorder /> : <AudioRecorder />}
+            </div>
+        </div>
         <div className={`${classes.grid} ${classes.bigSpace}`}>
           <Grid icon={<SecurityIcon style={{fill: "#4360A6", height:"125", width:"125"}}/>}  title="Secure" btnTitle="Show me More" />
           <Grid icon={<EventNoteIcon style={{fill: "#449A76", height:"125", width:"125"}}/>} title="Reliable" btnTitle="Show me More"/>
@@ -85,7 +111,10 @@ function App() {
         </div>
       </ThemeProvider>
     </div>
+    
+
   );
+
 }
 
 export default App;
