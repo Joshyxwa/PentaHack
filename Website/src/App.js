@@ -3,6 +3,7 @@ import {Typography} from '@material-ui/core';
 import NavBar from './components/NavBar'
 import Grid from './components/Grid'
 import Footer from './components/Footer'
+import RecordButton from './components/recording'
 import './App.css';
 //changes to imports 
 import SecurityIcon from '@material-ui/icons/Security';
@@ -74,6 +75,7 @@ function App() {
           the long nights of winter, when the only sounds were the howling
           winds outside.
           </Typography>
+          <RecordButton/>
         </div>
         <div className={`${classes.grid} ${classes.bigSpace}`}>
           <Grid icon={<SecurityIcon style={{fill: "#4360A6", height:"125", width:"125"}}/>}  title="Secure" btnTitle="Show me More" />
