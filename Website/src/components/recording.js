@@ -75,9 +75,12 @@ function Recorder() {
           method: 'POST',
           body: formData
         })
-          .then(response => {
-            console.log('Server response:', response);
-            // handle response as needed
+          .then(response => response.json())
+          .then(data => {
+            console.log('Server response:', data);
+            const predictedEmotion = data.emotion;
+            console.log(predictedEmotion)
+            // Do something with the predicted emotion value
           })
           .catch(error => {
             console.error('Error submitting audio recording:', error);
