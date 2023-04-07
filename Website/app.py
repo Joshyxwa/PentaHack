@@ -5,15 +5,60 @@ import os
 import tensorflow as tf
 import librosa
 import numpy as np
-
-
-
+import re
+from sqlalchemy import create_engine
+from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
 CORS(app, origins=['http://localhost:3000'])
 
 #Load Models
+db_username = "root"
+db_password = "brod"
+db_host = "localhost"
+db_name = "speechedtech"
+db_uri = f"mysql://{db_username}:{db_password}@{db_host}/{db_name}"
 
+
+app.config["SQLALCHEMY_DATABASE_URI"]=db_uri
+app.config["AUDIO_UPLOADS"] = "audio"
+app.config["MODEL_FILES"] = "models"
+db=SQLAlchemy(app)
+# class all_models():
+#     def __init__(self):
+#         self.puncbert = nemo_nlp.models.PunctuationCapitalizationModel.restore_from(restore_path=os.path.join(app.config["MODEL_FILES"], "punc_bert.nemo"))
+#         self.conformer = nemo_asr.models.EncDecCTCModel.restore_from(restore_path=os.path.join(app.config["MODEL_FILES"], "conformer_transducer.nemo"))
+#         self.spec_generator = nemo_tts.models.FastPitchModel.restore_from(restore_path=os.path.join(app.config["MODEL_FILES"], "fastpitch.nemo"))
+#         self.hifigan = nemo_tts.models.HifiGanModel.restore_from(restore_path=os.path.join('Website/models', "hifigan.nemo"))
+#         self.text_classifier = classifier = pipeline("text-classification", model="bhadresh-savani/bert-base-go-emotion")
+#         self.SEC_model = tf.keras.models.load_model('./Models/SEC_model.h5')
+
+# models = all_models()
+
+# @app.route("/transcribe", methods=['GET', 'POST'])
+# def asr():
+#     if request.method == "POST":
+#         if request.files:
+#             audio_file = request.files["audiofile"]
+#             audio_file.save(os.path.join(app.config["AUDIO_UPLOADS"], audio_file.filename))
+#             transcribed_text = models.conformer(audio_file.filename)
+#             punc_text = models.puncbert(transcribed_text[0])
+#             remove_last_index = False
+#             if (punc_text[0][-1] == '.') | (punc_text[0][-1] == '!') | (punc_text[0][-1] == '?'):
+#                 remove_last_index = True
+
+#             annotated_text = label_sentences(punc_text, remove_last_index)
+
+
+
+
+class Questions(db.Model):
+    __tablename__ = 'questions'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    Passage = db.Column(db.Text, nullable=False)
+    Level = db.Column(db.String(255), nullable=False)
+    Difficulty = db.Column(db.String(45), nullable=False)
 
 
 #SEC preprocessing
@@ -98,28 +143,45 @@ def predict():
   # Get the uploaded file
   # Get the uploaded file
   audio_file = request.files['audio']
-
+  questions = Questions.query.all()
+  with open('questions.txt', 'w') as f:
+    # loop through the results and write each row to the file
+    for row in questions:
+        f.write(f"Passage: {row.Passage}\nLevel: {row.Level}\nDifficulty: {row.Difficulty}\n\n")
   # Define the file path where the audio file will be saved
-  audio_file.save('recording.mp3')
+  audio_file.save('recording.wav')
   print(os.getcwd())
-  x=get_features("recording.mp3")
+  x=get_features("recording.wav")
 
   x=np.expand_dims(x, axis=2)
-  os.remove('recording.mp3')
+  os.remove('recording.wav')
   prediction=SEC_model.predict(x)
   prediction=np.argmax(prediction[0])
-  with open('output.txt', 'w') as f:
 
-        f.write(str(prediction) + '\n')
   # Save the file to disk
 #   audio_file.save('recording.wav')
     
   # Process audio data here
-  predicted_emotion = 'happy'
+
   result = {'emotion': sec_labels[prediction]}
   print(result)
   return jsonify(result)
 
+@app.route('/questions/<level>', methods=['GET'])
+def get_questions_by_level(level):
+    questions = Questions.query.all()
+    results = [
+        {
+            "id": question.id,
+            "Passage": question.Passage,
+
+        }
+        for question in questions if question.Level == level
+    ]
+    
+    return jsonify(results)
 
 if __name__ == '__main__':
     app.run(host='localhost', port=3001)
+
+

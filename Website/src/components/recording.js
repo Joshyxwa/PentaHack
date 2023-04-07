@@ -18,7 +18,7 @@ function Recorder() {
   }, [mediaRecorder]);
 
   function handleDataAvailable(e) {
-    const audioBlob = new Blob([e.data], { type: 'audio/mp3' });
+    const audioBlob = new Blob([e.data], { type: 'audio/wav' });
     const url = URL.createObjectURL(audioBlob);
     setAudioURL(url);
   }
@@ -62,7 +62,7 @@ function Recorder() {
       .then(audioBlob => {
         // Create a new File object from the audio blob
         const file = new File([audioBlob], 'recording.wav', {
-          type: 'audio/mp3',
+          type: 'audio/wav',
           lastModified: Date.now()
         });
 

@@ -1,9 +1,10 @@
 import React from 'react'
 import CustomBtn from './CustomBtn'
-import logo from '../logo.svg'
+import logo from '../speechEd.png'
 import logoMobile from '../logoMobile.svg'
 import {Toolbar, Typography} from '@material-ui/core'
 import {makeStyles} from "@material-ui/core/styles"; 
+import { Link } from 'react-router-dom';
 
 const styles = makeStyles({
     bar:{
@@ -44,7 +45,9 @@ function NavBar() {
                 <img src={logo} className={classes.logo}/> 
                 <img src={logoMobile} className={classes.logoMobile}/> 
                 <Typography variant="h6" className={classes.menuItem}>
-                   Home
+                <Link to="/" className={classes.link}>
+                    Home
+                </Link>
                 </Typography>
                 <Typography variant="h6" className={classes.menuItem}>
                     Your Progress
@@ -55,7 +58,7 @@ function NavBar() {
                 <Typography variant="h6" className={classes.menuItem}>
                     Sign Out
                 </Typography>
-                <CustomBtn txt="Trial Our Product"/>
+    
             </Toolbar>
     )
 }
