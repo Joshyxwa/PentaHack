@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './recording.css';
-
+//['angry', 'disgust', 'fear', 'happy', 'neutral', 'sad', 'surprise']
 function Recorder() {
   const [recording, setRecording] = useState(false);
   const [audioURL, setAudioURL] = useState('');
@@ -8,6 +8,7 @@ function Recorder() {
   const [timer, setTimer] = useState(0);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [intervalID, setIntervalID] = useState(null);
+  
 
   useEffect(() => {
     if (mediaRecorder) {
@@ -17,7 +18,7 @@ function Recorder() {
   }, [mediaRecorder]);
 
   function handleDataAvailable(e) {
-    const audioBlob = new Blob([e.data], { type: 'audio/wav' });
+    const audioBlob = new Blob([e.data], { type: 'audio/mp3' });
     const url = URL.createObjectURL(audioBlob);
     setAudioURL(url);
   }
@@ -51,11 +52,45 @@ function Recorder() {
     setRecording(false);
     clearInterval(intervalID);
   }
-
   function submitRecording() {
-    // post audio recording to '/predict'
-    console.log('Audio recording submitted');
+    // If there is no audio to submit, return
+    if (!audioURL) return;
+
+    // Convert the recorded audio blob to a File object
+    fetch(audioURL)
+      .then(response => response.blob())
+      .then(audioBlob => {
+        // Create a new File object from the audio blob
+        const file = new File([audioBlob], 'recording.wav', {
+          type: 'audio/mp3',
+          lastModified: Date.now()
+        });
+
+        // Create a FormData object and append the file to it
+        const formData = new FormData();
+        formData.append('audio', file);
+
+        // Send the FormData object to the server using the fetch() function
+        fetch('http://localhost:3001/predict', {
+          method: 'POST',
+          body: formData
+        })
+          .then(response => {
+            console.log('Server response:', response);
+            // handle response as needed
+          })
+          .catch(error => {
+            console.error('Error submitting audio recording:', error);
+            // handle error as needed
+          });
+      })
+      .catch(error => {
+        console.error('Error extracting audio data:', error);
+        // handle error as needed
+      });
   }
+
+  
 
   return (
     <div className="recorder-container">
@@ -84,6 +119,7 @@ function Recorder() {
       )}
     </div>
   );
+
 }
 
 export default Recorder;
