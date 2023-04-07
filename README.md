@@ -16,8 +16,9 @@ docker run -tid -v /var/run/docker.sock:/var/run/docker.sock  --name penta_con n
 git clone https://github.com/Joshyxwa/PentaHack.git
 ```
 
-4) Download nodejs and npm for React
+4) Download the package requirements, nodejs and npm for React
 ```
+pip install -r requirements.txt
 sudo apt update
 sudo apt install nodejs
 sudo apt install npm
