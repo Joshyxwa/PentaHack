@@ -1,3 +1,4 @@
+import React, { Component }  from 'react';
 import { createMuiTheme, ThemeProvider, makeStyles } from '@material-ui/core/styles';
 import {Typography} from '@material-ui/core'; 
 import NavBar from './components/NavBar'

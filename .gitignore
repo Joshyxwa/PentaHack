@@ -161,3 +161,9 @@ cython_debug/
 
 #Notebook
 .notebook/
+
+#Models
+Website/models
+*.nemo
+# React
+node_modules
