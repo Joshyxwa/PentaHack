@@ -7,6 +7,7 @@ import nemo.collections.tts as nemo_tts
 from transformers import pipeline
 import re
 import soundfile as sf
+import tensorflow as tf
 
 from application import app
 
@@ -18,9 +19,9 @@ class all_models():
         self.puncbert = nemo_nlp.models.PunctuationCapitalizationModel.restore_from(restore_path=os.path.join(app.config["MODEL_FILES"], "punc_bert.nemo"))
         self.conformer = nemo_asr.models.EncDecCTCModel.restore_from(restore_path=os.path.join(app.config["MODEL_FILES"], "conformer_transducer.nemo"))
         self.spec_generator = nemo_tts.models.FastPitchModel.restore_from(restore_path=os.path.join(app.config["MODEL_FILES"], "fastpitch.nemo"))
-        self.hifigan = nemo_tts.models.HifiGanModel.restore_from(restore_path=os.path.join('Website/models', "hifigan.nemo"))
-        self.text_classifier = classifier = pipeline("text-classification", model="bhadresh-savani/bert-base-go-emotion")
-
+        self.hifigan = nemo_tts.models.HifiGanModel.restore_from(restore_path=os.path.join(app.config["MODEL_FILES"], "hifigan.nemo"))
+        self.text_classifier = pipeline("text-classification", model="bhadresh-savani/bert-base-go-emotion")
+        self.sec_model = tf.keras.models.load_model(os.path.join(app.config["MODEL_FILES"], "Emotion_Model_conv1d_gender_93.h5"))
 models = all_models()
 
 @app.route("/transcribe", methods=['GET', 'POST'])

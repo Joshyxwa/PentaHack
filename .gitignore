@@ -165,5 +165,7 @@ cython_debug/
 #Models
 Website/models
 *.nemo
+*.h5
+
 # React
 node_modules
